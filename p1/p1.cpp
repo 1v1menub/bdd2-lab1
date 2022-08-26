@@ -119,5 +119,4 @@ int main() {
     printAlumno(fr.readRecord(1));
     printAlumno(fr.readRecord(5));
     printAlumno(fr.readRecord(7));
-    // tests for each fixedrecord method
 }
