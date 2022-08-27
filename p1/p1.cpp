@@ -112,9 +112,14 @@ int main() {
     strcpy(a.nombre, "Ignacio    ");
     strcpy(a.apellidos, "Rubio Montiel       ");
     strcpy(a.carrera, "Computacion    ");
+    //Load y print de los records
+    printAlumnos(fr.load());
+    //Agregar a ignacio
     fr.add(a);
+    //otro load y print
     printAlumnos(fr.load());
     cout << endl;
+    //read records
     printAlumno(fr.readRecord(0));
     printAlumno(fr.readRecord(1));
     printAlumno(fr.readRecord(5));

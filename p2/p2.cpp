@@ -61,17 +61,37 @@ public:
 
     void add(Alumno record) {
         record.nextdel = -100;
-        ofstream file(filename, ios::app | ios::binary);
+        ifstream filef(filename, ios::binary);
         try {
-            if(!file.is_open()) {
+            if(!filef.is_open()) {
                 throw 20;
             }
         }
         catch(int x) {
             cout << "Error: " << x <<". No se pudo abrir el archivo" << endl;
         }
-        file.write((char*) &record, sizeof(Alumno));
-        file.close();
+        int holepos;
+        filef.seekg(0, ios::beg);
+        filef.read((char*) &holepos, sizeof(int));
+        if(holepos == -1) {
+            ofstream file(filename, ios::app | ios::binary);
+            file.write((char*) &record, sizeof(Alumno));
+            file.close();
+            filef.close();
+        }
+        else {
+            int newhead;
+            ofstream file(filename, ios::in | ios::binary);
+            filef.seekg((holepos + 1) * sizeof(Alumno), ios::beg);
+            filef.read((char*) &newhead, sizeof(int));
+            file.seekp((holepos) * sizeof(Alumno) + sizeof(int), ios::beg);
+            file.write((char*) &record, sizeof(Alumno));
+            file.seekp(0, ios::beg);
+            file.write((char*) &newhead, sizeof(int));
+            file.close();
+            filef.close();
+        }
+        
     }
 
     Alumno readRecord(int pos) {
@@ -104,7 +124,15 @@ public:
         filer.seekg(0, ios::beg);
         int nextdel;
         filer.read((char*) &nextdel, sizeof(int));
-        ofstream filew(filename, ios::out | ios::binary);
+        int nextdelpos;
+        filer.seekg((pos+1) * sizeof(Alumno), ios::beg);
+        filer.read((char*) &nextdelpos, sizeof(int));
+        if(nextdelpos != -100) {
+            cout << "Record with pos: " << pos << " has already been deleted.";
+            return false;
+        }
+        filer.close();
+        ofstream filew(filename, ios::in | ios::binary);
         filew.seekp((pos+1) * sizeof(Alumno), ios::beg);
         filew.write((char*) &nextdel, sizeof(int));
         filew.seekp(0, ios::beg);
@@ -112,6 +140,7 @@ public:
         filew.close();
         filer.seekg(0, ios::beg);
         filer.read((char*) &nextdel, sizeof(int));
+        return true;
   /*       cout << nextdel << " xd ";
         int inpos;
         filer.seekg((pos + 1) * sizeof(Alumno), ios::beg);
@@ -165,10 +194,9 @@ int main() {
     strcpy(a.carrera, "Computacion    ");
     a.ciclo = 8;
     a.mensualidad = 4000.05f;
-    fr.add(a);
     printAlumnos(fr.load());
     cout << endl;
-    //fr.deleteRecord(2);
+    fr.add(a);
     fr.printHeader();
     printAlumnos(fr.load());
 
