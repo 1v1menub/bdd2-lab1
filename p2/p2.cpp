@@ -26,7 +26,6 @@ public:
         ifstream file(filename, ios::binary);
         file.seekg(0, ios::beg);
         if(is_empty(file)) {
-            cout << "XD";
             ofstream filex(filename, ios::app | ios::binary);
             int posfdel = -1;
             filex.write((char*) &posfdel, sizeof(int));
@@ -194,10 +193,31 @@ int main() {
     strcpy(a.carrera, "Computacion    ");
     a.ciclo = 8;
     a.mensualidad = 4000.05f;
-    printAlumnos(fr.load());
-    cout << endl;
+    // se agregan 2 ignacios
     fr.add(a);
-    fr.printHeader();
+    fr.add(a);
+    //se cargan e imprimen todos los alumnos
+    printAlumnos(fr.load());
+    //se borra el primer record
+    fr.deleteRecord(0);
+    cout << endl;
+    printAlumnos(fr.load());
+    Alumno b;
+    strcpy(b.codigo, "0009 ");
+    strcpy(b.nombre, "Alejandro  ");
+    strcpy(b.apellidos, "Rubio Montiel       ");
+    strcpy(b.carrera, "Arte           ");
+    b.ciclo = 1;
+    b.mensualidad = 8000.20f;
+    cout << endl;
+    // se agrega un alejandro (en donde se borro el record pos = 0)
+    fr.add(b);
+    // se buscan a los 2 records individualmente y se imprimer
+    printAlumno(fr.readRecord(0));
+    cout << endl;
+    printAlumno(fr.readRecord(1));
+    cout << endl;
+    // se imprimen todos los records
     printAlumnos(fr.load());
 
 }
